@@ -4,14 +4,14 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 let connection = mysql.createConnection({
-    host: "mydb.tamk.fi",
+    host: 'mydb.tamk.fi',
     user: process.env.user,
     password: process.env.password,
     database: process.env.database,
 });
 
-app.get("/", (req, res) => {
-    connection.query("SELECT * from location", (error, results) => {
+app.get('/', (req, res) => {
+    connection.query('SELECT * from locations', (error, results) => {
         if (error) console.log(error);
         else res.send(results);
     });
