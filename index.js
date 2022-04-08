@@ -1,22 +1,31 @@
+const db = require('./db.js').connection;
+const locations = require('./locations.js');
 const express = require('express');
-const mysql = require('mysql');
+const cors = require('cors');
+
 const app = express();
 const port = process.env.PORT || 8080;
 
-let connection = mysql.createConnection({
-    host: 'mydb.tamk.fi',
-    user: process.env.user,
-    password: process.env.password,
-    database: process.env.database,
-});
+// Main function
+(async () => {
+    try {
+        await db.connect();
+        app.use(express.json());
+        app.use(cors());
+        //app.use((req, res, next) => {
+        //    res.header('Access-Control-Allow-Origin', '*');
+        //    next();
+        //});
+        app.use('/locations', locations);
 
-app.get('/', (req, res) => {
-    connection.query('SELECT * from locations', (error, results) => {
-        if (error) console.log(error);
-        else res.send(results);
-    });
-});
-
-const server = app.listen(port, () => {
-    console.log(`Listening on port ${server.address().port}`);
-}); 
+        const server = app.listen(port, () => {
+            console.log('Listening on port ' + port);
+        });
+        process.on('SIGINT', async () => {
+            await db.close();
+            server.close(() => process.exit(1));
+        });
+    } catch (err) {
+        console.log(err);
+    }
+})();
