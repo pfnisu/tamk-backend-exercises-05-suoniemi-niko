@@ -1,4 +1,3 @@
-const db = require('./db.js').connection;
 const locations = require('./locations.js');
 const express = require('express');
 const cors = require('cors');
@@ -9,7 +8,6 @@ const port = process.env.PORT || 8080;
 // Main function
 (async () => {
     try {
-        await db.connect();
         app.use(express.json());
         app.use(cors());
         app.use(express.static("frontend/build"));
@@ -19,8 +17,10 @@ const port = process.env.PORT || 8080;
             console.log('Listening on port ' + port);
         });
         process.on('SIGINT', async () => {
-            await db.close();
-            server.close(() => process.exit(1));
+            server.close(() => {
+                console.log('Server closed.');
+                process.exit(1)
+            });
         });
     } catch (err) {
         console.log(err);
