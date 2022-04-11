@@ -1,7 +1,7 @@
 const db = require('./db.js').connection;
 const locations = require('./locations.js');
 const express = require('express');
-//const cors = require('cors');
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -11,12 +11,8 @@ const port = process.env.PORT || 8080;
     try {
         await db.connect();
         app.use(express.json());
-        //app.use(cors());
-        //app.use((req, res, next) => {
-        //    res.header('Access-Control-Allow-Origin', '*');
-        //    next();
-        //});
-        app.use(express.static('public'));
+        app.use(cors());
+        app.use(express.static("frontend/build"));
         app.use('/locations', locations);
 
         const server = app.listen(port, () => {
