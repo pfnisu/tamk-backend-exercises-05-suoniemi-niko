@@ -1,4 +1,4 @@
-const db = require('./db.js').query;
+const db = require('./db.js');
 const locations = require('express').Router();
 const validate = require('jsonschema').validate;
 
