@@ -9,7 +9,7 @@ const App = () => {
   // GET locations from backend to state object at component mount
   React.useEffect(() => {
     (async () => {
-        let resp = await axios.get('http://localhost:8080/locations');
+        let resp = await axios.get('/locations');
         setLocations(resp.data);
     })();
   }, []);
