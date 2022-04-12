@@ -1,23 +1,38 @@
-import "./App.css";
-import React from "react";
+import './App.css';
+import React from 'react';
+import axios from 'axios';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
-class App extends React.Component {
-  state = { locations: [] };
-  async componentDidMount() {
-    let hr = await fetch("http://localhost:8080/locations");
-    let json = await hr.json();
-    this.setState({ locations: json });
-  }
-  render() {
-      if (this.state.locations.length === 0) {
-         return <p>loading...</p>;
-      } else {
-        let ui = this.state.locations.map((loc) => (
-          <li key={loc.id}>
-            {loc.id} - {loc.latitude} - {loc.longitude}
-          </li>));
-        return <ul>{ui}</ul>;
-    }
-  }
+const App = () => {
+  const [locations, setLocations] = React.useState([]);
+
+  // GET locations from backend to state object at component mount
+  React.useEffect(() => {
+    (async () => {
+        let resp = await axios.get('http://localhost:8080/locations');
+        setLocations(resp.data);
+    })();
+  }, []);
+
+  // Map locations to leaflet Markers
+  let markers = locations.map(loc =>
+      <Marker position={[loc.latitude, loc.longitude]}>
+        <Popup>
+          Id: {loc.id}<br />
+          Latitude: {loc.latitude}<br />
+          Longitude: {loc.longitude}
+        </Popup>
+      </Marker>
+  );
+
+  return (
+    <MapContainer center={[51.505, -0.09]} zoom={2} scrollWheelZoom={false}>
+      <TileLayer
+        attribution="&copy; <a href='http://osm.org/copyright'>OpenStreetMap</a> contributors"
+        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      />
+      {markers}
+    </MapContainer>
+  );
 }
 export default App;
